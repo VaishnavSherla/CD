@@ -1,6 +1,5 @@
 import re
 
-
 class TokenType:
     NUMBER = 'NUMBER'
     PLUS = 'PLUS'
@@ -8,36 +7,31 @@ class TokenType:
     MULTIPLY = 'MULTIPLY'
     END = 'END'
 
-
 class Token:
-
     def __init__(self, type, value=None):
         self.type = type
         self.value = value
-
 
 def get_next_token(input_str):
     input_str = input_str.lstrip()
     if not input_str:
         return Token(TokenType.END)
-
+    
     if input_str[0] == '+':
         return Token(TokenType.PLUS)
     elif input_str[0] == '-':
         return Token(TokenType.MINUS)
     elif input_str[0] == '*':
         return Token(TokenType.MULTIPLY)
+    elif re.match(r'^[0-9]\d*', input_str):
+        number = re.match(r'^[0-9]\d*', input_str).group()
+        return Token(TokenType.NUMBER, number)
     else:
-        match = re.match(r'^(\d+)', input_str)
-        if match:
-            number = int(match.group())
-            return Token(TokenType.NUMBER, number)
-        else:
-            raise ValueError(f"Invalid character '{input_str[0]}'")
+        raise ValueError(f"Invalid character '{input_str[0]}'")
 
 
 def main():
-    input_str = "12.3 + 34 - 5 * 6"
+    input_str = "12 + 34 - 5 * 6"
     while True:
         token = get_next_token(input_str)
         if token.type == TokenType.END:
@@ -45,12 +39,10 @@ def main():
             break
         elif token.type == TokenType.NUMBER:
             print("Number:", token.value)
+            input_str = input_str[len(token.value):].lstrip()
         else:
             print("Operator:", token.type)
-        input_str = input_str[
-            len(str(token.value)
-                ):] if token.type == TokenType.NUMBER else input_str[1:]
-
+            input_str = input_str[1:].lstrip()
 
 if __name__ == '__main__':
     main()
